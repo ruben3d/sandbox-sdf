@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Sandbox - Signed distance field rendering</title>
+    <style>
+        ::selection {
+            background-color: #276bff;
+        }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            user-select: none;
+        }
+
+        body {
+            display: flex;
+            font-family: Seravek, "Gill Sans Nova", Ubuntu, Calibri, "DejaVu Sans", source-sans-pro, sans-serif;
+            font-weight: 600;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 0;
+            margin: 0;
+            padding: 0;
+            background: repeating-conic-gradient(#ccc 0% 25%, #eee 0% 50%) 50% / 20px 20px
+        }
+
+        aside {
+            overflow-y: auto;
+            width: 480px;
+            padding: 0;
+            background-color: #555555;
+            color: #ddd;
+            font-size: 1em;
+            text-shadow: 0 0 2px black;
+        }
+
+        main>section {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+        }
+
+        #output {
+            flex: 2;
+            position: relative;
+        }
+
+        #output > canvas {
+            position: absolute;
+        }
+
+        #sources {
+            overflow: auto;
+            padding: 1em;
+            box-shadow: inset 0px 10px 17px -10px #000000
+        }
+
+        #sources>* {
+            box-shadow: 0px 5px 10px -5px #000000
+        }
+
+        #sources>p {
+            display: inline-block;
+            padding: 1em;
+            font-size: x-large;
+            font-weight: 600;
+            background-color: #ffed74;
+        }
+
+        #sources>canvas {
+            display: block;
+            margin: 0;
+            padding: 1em;
+            background-color: #ffed74;
+        }
+
+        aside p {
+            margin: 0 0 1em 0;
+            padding: 0.5em;
+        }
+
+        aside p.info {
+            border: 2px solid #3d3d3d;
+            border-radius: 3px;
+        }
+
+        aside p.info::before {
+            content: 'ⓘ ';
+            color: white;
+            font-weight: 900;
+            font-size: large;
+        }
+
+        aside>ul {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background-color: #454545;
+        }
+
+        aside>ul>li {
+            cursor: pointer;
+            display: inline-block;
+            width: 6em;
+            text-align: center;
+            line-height: 2.5em;
+            border: 2px solid #3d3d3d;
+            font-weight: bold;
+            color: #aaa;
+            background-color: #454545;
+        }
+
+        aside>ul>li.active {
+            cursor: default;
+            color: #ddd;
+            background-color: #555555;
+            border-bottom-color: transparent;
+        }
+
+        aside>section {
+            display: none;
+            padding: 1em;
+        }
+
+        aside>section.active {
+            display: block;
+        }
+
+        .input {
+            margin-bottom: 0.25em;
+        }
+
+        .input.inline {
+            display: inline-block;
+        }
+
+        aside label {
+            display: inline-block;
+            text-align: right;
+        }
+
+        .form {
+            display: grid;
+            grid-template-columns: max-content max-content;
+        }
+
+        .form label {
+            line-height: 2em;
+        }
+
+        fieldset {
+            padding: 0.5em;
+            border: 2px solid #3d3d3d;
+            border-radius: 3px;
+            margin-bottom: 0.5em;
+        }
+
+        fieldset>legend {
+            padding: 0 0.5em;
+        }
+
+        fieldset>legend>label {
+            width: unset;
+        }
+
+        fieldset label {
+            width: 9em;
+        }
+
+        fieldset>fieldset>label,
+        fieldset>fieldset>div label {
+            width: calc(9em - 2px - 0.5em);
+        }
+
+        input {
+            box-sizing: border-box;
+            padding: 0.5em;
+            color: white;
+            background-color: #454545;
+            border: 1px solid #888;
+            font-size: 1em;
+            border-radius: 3px;
+        }
+
+        input:focus {
+            outline: 2px solid #276bff;
+        }
+
+        input[type="number" i] {
+            width: 4.5em;
+        }
+
+        input[type="range" i] {
+            width: 8em;
+            margin-left: 0.5em;
+            vertical-align: middle;
+        }
+
+        input[type="text" i] {
+            width: 8em;
+            margin-left: 0.5em;
+        }
+
+        input[type="color" i] {
+            padding: 0;
+            height: 2.3em;
+            vertical-align: bottom;
+            border: 0;
+        }
+
+        button {
+            box-sizing: border-box;
+            padding: 0.5em 1em;
+            color: white;
+            background-color: #276bff;
+            border: 1px solid #276bff;
+            font-size: 1em;
+            border-radius: 1em;
+        }
+
+        button:active {
+            background-color: #2058cf;
+        }
+
+        fieldset:disabled>label {
+            color: #aaa;
+        }
+
+        fieldset:disabled input {
+            background-color: #4c4c4c;
+            color: #aaa;
+        }
+
+        a {
+            color: #fff;
+        }
+
+        a:hover {
+            color: #5c8fff;
+        }
+
+        div.select-panel {
+            display: none;
+        }
+
+        div.select-panel.active {
+            display: block;
+        }
+
+        select,
+        ::picker(select) {
+            appearance: base-select;
+        }
+
+        select {
+            box-sizing: border-box;
+            display: inline-block;
+            padding: 0.5em;
+            margin-left: 0.5em;
+            color: white;
+            background-color: #454545;
+            border: 1px solid #888;
+            font-size: 1em;
+            border-radius: 3px;
+        }
+
+        select:focus {
+            outline: 2px solid #276bff;
+        }
+
+        ::picker(select) {
+            box-sizing: border-box;
+            padding: 0.5em;
+            color: white;
+            background-color: #454545;
+            border: 1px solid #888;
+            font-size: 1em;
+            border-radius: 3px;
+        }
+
+        select option {
+            line-height: 1.5em;
+        }
+
+        select option::checkmark {
+            width: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <section id="output">
+        </section>
+        <section id="sources">
+            <p>Signed distance field:</p>
+            <canvas id="field"></canvas>
+            <p>Source texture:</p>
+            <canvas id="source"></canvas>
+        </section>
+    </main>
+    <aside>
+        <ul>
+            <li class="active">Input</li>
+            <li>Scene</li>
+            <li>Styles</li>
+            <li>About</li>
+        </ul>
+
+        <section class="active">
+        </section>
+
+        <section>
+            <p class="info">Options adjusting the context of the visualization.</p>
+        </section>
+
+        <section>
+            <p class="info">Real-time effects applied to the SDF texture rendering.</p>
+        </section>
+
+        <section>
+            <p class="info">
+                <strong>Signed Distance Field text rendering sandbox</strong><br><br>
+                Coded by Ruben Moreno<br>
+                <a href="https://github.com/ruben3d">GitHub</a> | <a
+                    href="https://bsky.app/profile/ruben3d.bsky.social">Bluesky</a> | <a
+                    href="https://x.com/ruben3d">Twitter</a><br>
+                <br>
+                Based on the <a
+                    href="https://steamcdn-a.akamaihd.net/apps/valve/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf"
+                    target="_blank">
+                    Improved Alpha-Tested Magnification for Vector Textures and Special Effects</a>
+                paper by Chris Green from Valve.<br>
+                <br>
+                Shape <a
+                    href="https://iquilezles.org/articles/distfunctions2d/"
+                    target="_blank">
+                    2D distance functions</a>
+                created by &Iacute;&ntilde;igo Qu&iacute;lez.<br>
+                <br>
+                Web-safe <a
+                    href="https://modernfontstacks.com/"
+                    target="_blank">
+                    font families</a>
+                curated by Dan Klammer.<br>
+            </p>
+        </section>
+    </aside>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "./three.module.js"
+            }
+        }
+    </script>
+    <script type="module" src="index.js"></script>
+</body>
+
+</html>

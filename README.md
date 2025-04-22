@@ -1,1 +1,2 @@
 # sandbox-sdf
+Playground for experimenting with signed distance field textures for shape and text rendering. The main goal for this project is helping me to develop an understanding of how real-time effects can be achieved using SDFs, and define a reasonable set of parameters to fine-tune the effects on different scenarios.

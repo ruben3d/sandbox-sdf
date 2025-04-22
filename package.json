@@ -1,0 +1,22 @@
+{
+  "name": "sandbox-sdf",
+  "version": "0.0.1",
+  "description": "Coding playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "copy": "node scripts/copy.js",
+    "build": "npm run copy && tsc",
+    "serve": "npx http-server ./dist -o -p 8000"
+  },
+  "author": "Ruben Moreno Montoliu <ruben3d@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/three": "0.171.0",
+    "http-server": "14.1.1",
+    "typescript": "5.7.2"
+  },
+  "dependencies": {
+    "three": "0.171.0"
+  }
+}
