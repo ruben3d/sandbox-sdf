@@ -354,7 +354,7 @@ export class TextControl {
     }
 
     setInnerShadowOffsetX(value: number) {
-        this.uniforms['innerShadowOffsetX'].value = -value * this.sdfSettings.spread / this.sdfSettings.width;
+        this.uniforms['innerShadowOffsetX'].value = -value * this.sdfSettings.spread / this.sdfSettings.height;
         this.material.needsUpdate = true;
     }
 
