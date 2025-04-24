@@ -21,6 +21,7 @@ const FragmentShader = `
     precision highp float;
 
     uniform sampler2D sdf;
+    uniform vec2 size;
     uniform float weight;
     uniform vec3 color;
     uniform vec3 colorB;
@@ -70,6 +71,9 @@ const FragmentShader = `
     }
 
     void main() {
+        float aspectRatio = size.x / size.y;
+        float shadowOffsetScaleX = aspectRatio > 1.0 ? 1.0/aspectRatio : 1.0;
+        float shadowOffsetScaleY = aspectRatio < 1.0 ? aspectRatio : 1.0;
         float adjustedShadowBlur = max(shadowBlur, blur);
         float adjustedInnerShadowBlur = max(innerShadowBlur, blur);
         float adjustedBevelBlur = max(bevelBlur, blur);
@@ -106,7 +110,7 @@ const FragmentShader = `
 
         // Inner shadow
         if (innerShadowOpacity > 0.0 && innerEdge - blur < dist) {
-            float innerShadowDist = reflectOnCenter(texture2D(sdf, vUV + vec2(innerShadowOffsetX, innerShadowOffsetY)).r, innerEdge);
+            float innerShadowDist = reflectOnCenter(texture2D(sdf, vUV + vec2(innerShadowOffsetX * shadowOffsetScaleX, innerShadowOffsetY * shadowOffsetScaleY)).r, innerEdge);
             vec4 innerShadowBaseColor = vec4(innerShadowColor, innerShadowDist);
             innerShadowBaseColor.a = smoothstep(innerEdge - adjustedInnerShadowBlur, innerEdge + adjustedInnerShadowBlur, innerShadowBaseColor.a) * innerShadowOpacity;
             baseColor = blendAoverB(innerShadowBaseColor, baseColor);
@@ -130,7 +134,7 @@ const FragmentShader = `
 
         // Drop shadow
         if (shadowOpacity > 0.0 && dist < edge + blur) {
-            float shadowDist = texture2D(sdf, vUV + vec2(shadowOffsetX, shadowOffsetY)).r;
+            float shadowDist = texture2D(sdf, vUV + vec2(shadowOffsetX * shadowOffsetScaleX, shadowOffsetY * shadowOffsetScaleY)).r;
             vec4 shadowBaseColor = vec4(shadowColor, shadowDist);
             shadowBaseColor.a = smoothstep(max(0.0, edge - adjustedShadowBlur), min(edge + adjustedShadowBlur, 1.0), shadowBaseColor.a) * shadowOpacity;
             baseColor = blendAoverB(baseColor, shadowBaseColor);
@@ -192,6 +196,7 @@ export class TextControl {
 
         const uniforms: Uniforms = {
             sdf: { value: this.createTexture(sdf) },
+            size: { value: new THREE.Vector2(sdf.width, sdf.height) },
             weight: { value: TextControl.WeightDefault },
             color: { value: new THREE.Color(TextControl.ColorDefault) },
             colorB: { value: new THREE.Color(TextControl.ColorBDefault) },
@@ -249,6 +254,7 @@ export class TextControl {
         const oldTexture = this.uniforms['sdf'].value as THREE.Texture;
         oldTexture.dispose();
         this.uniforms['sdf'].value = this.createTexture(sdf);
+        (this.uniforms['size'].value as THREE.Vector2).set(sdf.width, sdf.height);
         this.material.needsUpdate = true;
         this.mesh = TextControl.setScale(this.mesh, sdf.width, sdf.height);
     }
@@ -354,12 +360,12 @@ export class TextControl {
     }
 
     setInnerShadowOffsetX(value: number) {
-        this.uniforms['innerShadowOffsetX'].value = -value * this.sdfSettings.spread / this.sdfSettings.height;
+        this.uniforms['innerShadowOffsetX'].value = -value * this.sdfSettings.spread / Math.min(this.sdfSettings.width, this.sdfSettings.height);
         this.material.needsUpdate = true;
     }
 
     setInnerShadowOffsetY(value: number) {
-        this.uniforms['innerShadowOffsetY'].value = value * this.sdfSettings.spread / this.sdfSettings.height;
+        this.uniforms['innerShadowOffsetY'].value = value * this.sdfSettings.spread / Math.min(this.sdfSettings.width, this.sdfSettings.height);
         this.material.needsUpdate = true;
     }
 
