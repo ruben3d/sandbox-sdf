@@ -8,6 +8,16 @@ It is based on the original work presented in the [Improved Alpha-Tested Magnifi
 
 [https://ruben3d.github.io/sandbox-sdf/dist](https://ruben3d.github.io/sandbox-sdf/dist)
 
+
+## Examples
+
+[<img src="doc/01.png" width="504" height="200" />](doc/01.png)
+[<img src="doc/02.png" width="504" height="200" />](doc/02.png)
+[<img src="doc/03.png" width="504" height="200" />](doc/03.png)
+[<img src="doc/04.png" width="504" height="200" />](doc/04.png)
+[<img src="doc/05.png" width="504" height="200" />](doc/05.png)
+[<img src="doc/06.png" width="504" height="200" />](doc/06.png)
+
 ## How to build
 
 You need node.js installed globally (I have been using 22.11.0).
