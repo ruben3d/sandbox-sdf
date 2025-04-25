@@ -20,9 +20,11 @@ function run() {
         distanceMethod: ImageSamplerDistanceMethod.LINEAR,
     };
     const circleSamplerSettings = {
+        thickness: 0.0,
         radius: 0.5,
     };
     const boxSamplerSettings = {
+        thickness: 0.0,
         halfWidth: 0.6,
         halfHeight: 0.4,
         topLeftRadius: 0.1,

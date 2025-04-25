@@ -35,10 +35,12 @@ function run() {
     }
 
     const circleSamplerSettings: CircleSamplerSettings = {
+        thickness: 0.0,
         radius: 0.5,
     }
 
     const boxSamplerSettings: BoxSamplerSettings = {
+        thickness: 0.0,
         halfWidth: 0.6,
         halfHeight: 0.4,
         topLeftRadius: 0.1,

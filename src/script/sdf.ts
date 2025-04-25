@@ -39,26 +39,32 @@ interface DistanceSampler {
     sample(targetX: number, targetY: number, targetWidth: number, targetHeight: number, targetSpread: number): number;
 }
 
+export interface ShapeSamplerSettings {
+    thickness: number;
+}
+
 abstract class ShapeDistanceSampler implements DistanceSampler {
+    constructor(protected settings: ShapeSamplerSettings) { }
+
     sample(targetX: number, targetY: number, targetWidth: number, targetHeight: number, targetSpread: number): number {
         const frameSize = Math.min(targetWidth, targetHeight);
         const scaledSpread = 2.0 * targetSpread / frameSize;
         const x = 2.0 * (targetWidth / frameSize) * (targetX - targetWidth * 0.5) / targetWidth;
         const y = 2.0 * (targetHeight / frameSize) * (targetY - targetHeight * 0.5) / targetHeight;
-        const d = -this.distance(x, -y);
+        const d = this.settings.thickness > 0.0 ? -Math.abs(this.distance(x, -y)) + this.settings.thickness : -this.distance(x, -y);
         return Math.max(0.0, Math.min((d / scaledSpread + 1.0) * 0.5, 1.0));
     }
 
     protected abstract distance(x: number, y: number): number;
 }
 
-export interface CircleSamplerSettings {
+export interface CircleSamplerSettings extends ShapeSamplerSettings {
     radius: number; // [0,1]
 }
 
 export class CircleDistanceSampler extends ShapeDistanceSampler {
 
-    constructor(private settings: CircleSamplerSettings) { super(); }
+    constructor(protected settings: CircleSamplerSettings) { super(settings); }
 
     // sdCircle
     protected distance(x: number, y: number): number {
@@ -66,7 +72,7 @@ export class CircleDistanceSampler extends ShapeDistanceSampler {
     }
 }
 
-export interface BoxSamplerSettings {
+export interface BoxSamplerSettings extends ShapeSamplerSettings {
     halfWidth: number;
     halfHeight: number;
     topLeftRadius: number;
@@ -77,7 +83,7 @@ export interface BoxSamplerSettings {
 
 export class BoxDistanceSampler extends ShapeDistanceSampler {
 
-    constructor(private settings: BoxSamplerSettings) { super(); }
+    constructor(protected settings: BoxSamplerSettings) { super(settings); }
 
     // sdRoundedBox
     protected distance(x: number, y: number): number {

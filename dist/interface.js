@@ -89,14 +89,20 @@ function createInputSettings(textControl, inputControl) {
     sourceScaleInput.set(inputControl.textSettings.scale.toString());
     inputSourceSettingsFS.addOption('Text', textInput, fontInput, fontWeightInput, distanceMethodInput, sourceScaleInput, sourceSizeInfoComponent);
     const circleRadiusInput = new RangeInputComponent('Radius', 0.5, 0.5, 0.25, 0.75, 0.01, v => inputControl.circleSamplerSettings.radius = v);
-    inputSourceSettingsFS.addOption('Circle', circleRadiusInput);
+    const circleContourThicknessInput = new RangeInputComponent('Thickness', 0.0, 0.15, 0.01, 0.5, 0.01, v => inputControl.circleSamplerSettings.thickness = v);
+    const circleContourFS = new FieldSetToggleComponent('Contour');
+    circleContourFS.append(circleContourThicknessInput);
+    inputSourceSettingsFS.addOption('Circle', circleRadiusInput, circleContourFS);
     const boxWidthInput = new RangeInputComponent('Width', 0.6, 0.6, 0.1, 0.75, 0.01, v => inputControl.boxSamplerSettings.halfWidth = v);
     const boxHeightInput = new RangeInputComponent('Height', 0.4, 0.4, 0.1, 0.75, 0.01, v => inputControl.boxSamplerSettings.halfHeight = v);
     const boxTopLeftRadiusInput = new RangeInputComponent('Top left radius', 0.1, 0.1, 0.0, 0.5, 0.01, v => inputControl.boxSamplerSettings.topLeftRadius = v);
     const boxTopRightRadiusInput = new RangeInputComponent('Top right radius', 0.1, 0.1, 0.0, 0.5, 0.01, v => inputControl.boxSamplerSettings.topRightRadius = v);
     const boxBottomLeftRadiusInput = new RangeInputComponent('Bottom left radius', 0.1, 0.1, 0.0, 0.5, 0.01, v => inputControl.boxSamplerSettings.bottomLeftRadius = v);
     const boxBottomRighttRadiusInput = new RangeInputComponent('Bottom right radius', 0.1, 0.1, 0.0, 0.5, 0.01, v => inputControl.boxSamplerSettings.bottomRightRadius = v);
-    inputSourceSettingsFS.addOption('Box', boxWidthInput, boxHeightInput, boxTopLeftRadiusInput, boxTopRightRadiusInput, boxBottomLeftRadiusInput, boxBottomRighttRadiusInput);
+    const boxContourThicknessInput = new RangeInputComponent('Thickness', 0.0, 0.15, 0.01, 0.5, 0.01, v => inputControl.boxSamplerSettings.thickness = v);
+    const boxContourFS = new FieldSetToggleComponent('Contour');
+    boxContourFS.append(boxContourThicknessInput);
+    inputSourceSettingsFS.addOption('Box', boxWidthInput, boxHeightInput, boxTopLeftRadiusInput, boxTopRightRadiusInput, boxBottomLeftRadiusInput, boxBottomRighttRadiusInput, boxContourFS);
     result.push(inputSourceSettingsFS);
     const sdfSizeInfo = (width, height) => {
         return `GPU size: ${width}x${height} 8bit ${width * height / 1024 / 1024}MB`;

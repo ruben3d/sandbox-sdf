@@ -134,7 +134,11 @@ function createInputSettings(textControl: TextControl, inputControl: InputContro
 
     const circleRadiusInput = new RangeInputComponent('Radius', 0.5, 0.5, 0.25, 0.75, 0.01,
         v => inputControl.circleSamplerSettings.radius = v);
-    inputSourceSettingsFS.addOption('Circle', circleRadiusInput);
+    const circleContourThicknessInput = new RangeInputComponent('Thickness', 0.0, 0.15, 0.01, 0.5, 0.01,
+        v => inputControl.circleSamplerSettings.thickness = v);
+    const circleContourFS = new FieldSetToggleComponent('Contour');
+    circleContourFS.append(circleContourThicknessInput)
+    inputSourceSettingsFS.addOption('Circle', circleRadiusInput, circleContourFS);
 
 
     // --------- Source - Box -----------
@@ -151,8 +155,12 @@ function createInputSettings(textControl: TextControl, inputControl: InputContro
         v => inputControl.boxSamplerSettings.bottomLeftRadius = v);
     const boxBottomRighttRadiusInput = new RangeInputComponent('Bottom right radius', 0.1, 0.1, 0.0, 0.5, 0.01,
         v => inputControl.boxSamplerSettings.bottomRightRadius = v);
+    const boxContourThicknessInput = new RangeInputComponent('Thickness', 0.0, 0.15, 0.01, 0.5, 0.01,
+        v => inputControl.boxSamplerSettings.thickness = v);
+    const boxContourFS = new FieldSetToggleComponent('Contour');
+    boxContourFS.append(boxContourThicknessInput)
     inputSourceSettingsFS.addOption('Box',
-        boxWidthInput, boxHeightInput, boxTopLeftRadiusInput, boxTopRightRadiusInput, boxBottomLeftRadiusInput, boxBottomRighttRadiusInput);
+        boxWidthInput, boxHeightInput, boxTopLeftRadiusInput, boxTopRightRadiusInput, boxBottomLeftRadiusInput, boxBottomRighttRadiusInput, boxContourFS);
 
 
     result.push(inputSourceSettingsFS);

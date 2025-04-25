@@ -23,18 +23,21 @@ export class SDFGenerator {
     }
 }
 class ShapeDistanceSampler {
+    constructor(settings) {
+        this.settings = settings;
+    }
     sample(targetX, targetY, targetWidth, targetHeight, targetSpread) {
         const frameSize = Math.min(targetWidth, targetHeight);
         const scaledSpread = 2.0 * targetSpread / frameSize;
         const x = 2.0 * (targetWidth / frameSize) * (targetX - targetWidth * 0.5) / targetWidth;
         const y = 2.0 * (targetHeight / frameSize) * (targetY - targetHeight * 0.5) / targetHeight;
-        const d = -this.distance(x, -y);
+        const d = this.settings.thickness > 0.0 ? -Math.abs(this.distance(x, -y)) + this.settings.thickness : -this.distance(x, -y);
         return Math.max(0.0, Math.min((d / scaledSpread + 1.0) * 0.5, 1.0));
     }
 }
 export class CircleDistanceSampler extends ShapeDistanceSampler {
     constructor(settings) {
-        super();
+        super(settings);
         this.settings = settings;
     }
     distance(x, y) {
@@ -43,7 +46,7 @@ export class CircleDistanceSampler extends ShapeDistanceSampler {
 }
 export class BoxDistanceSampler extends ShapeDistanceSampler {
     constructor(settings) {
-        super();
+        super(settings);
         this.settings = settings;
     }
     distance(x, y) {
