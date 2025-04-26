@@ -108,7 +108,7 @@ function createInputSettings(textControl, inputControl) {
         return `GPU size: ${width}x${height} 8bit ${width * height / 1024 / 1024}MB`;
     };
     const sdfSizeInfoComponent = new InfoBoxComponent(sdfSizeInfo(inputControl.sdfSettings.width, inputControl.sdfSettings.height));
-    const spreadInput = new RangeInputComponent('Spread', 4, 4, 2, 32, 1, v => inputControl.sdfSettings.spread = v);
+    const spreadInput = new RangeInputComponent('Spread', inputControl.sdfSettings.spread, inputControl.sdfSettings.spread, 2, 32, 1, v => inputControl.sdfSettings.spread = v);
     const sdfWidthInput = new DropdownInputComponent('SDF size', [
         ['16', '16'],
         ['32', '32'],

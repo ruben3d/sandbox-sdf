@@ -1,9 +1,9 @@
 import { ButtonComponent, ColorInputComponent, Component, DropdownInputComponent, FieldSetComponent, FieldSetDropdownComponent, FieldSetToggleComponent, FontInputComponent, InfoBoxComponent, RangeInputComponent, setupMenuTabs, TextComponent, TextInputComponent } from './components.js';
 import { InputControl, SDFSource } from './control.js';
-import { RendererWrapper } from './renderer.js';
 import { Scene } from './scene.js';
 import { ImageSamplerDistanceMethod } from './sdf.js';
 import { TextControl } from './text.js';
+
 
 export function setupUI(scene: Scene, textControl: TextControl, inputControl: InputControl) {
     setupMenuTabs();
@@ -173,7 +173,7 @@ function createInputSettings(textControl: TextControl, inputControl: InputContro
     };
     const sdfSizeInfoComponent = new InfoBoxComponent(sdfSizeInfo(inputControl.sdfSettings.width, inputControl.sdfSettings.height));
 
-    const spreadInput = new RangeInputComponent('Spread', 4, 4, 2, 32, 1,
+    const spreadInput = new RangeInputComponent('Spread', inputControl.sdfSettings.spread, inputControl.sdfSettings.spread, 2, 32, 1,
         v => inputControl.sdfSettings.spread = v);
 
     const sdfWidthInput = new DropdownInputComponent('SDF size',
