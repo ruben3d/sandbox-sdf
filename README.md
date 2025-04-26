@@ -17,6 +17,13 @@ It is based on the original work presented in the [Improved Alpha-Tested Magnifi
 [<img src="doc/04.png" width="504" height="200" />](doc/04.png)
 [<img src="doc/05.png" width="504" height="200" />](doc/05.png)
 [<img src="doc/06.png" width="504" height="200" />](doc/06.png)
+[<img src="doc/07.png" width="504" height="200" />](doc/07.png)
+
+
+[<img src="doc/08.png" width="200" height="200" />](doc/08.png)
+[<img src="doc/09.png" width="200" height="200" />](doc/09.png)
+[<img src="doc/10.png" width="200" height="200" />](doc/10.png)
+[<img src="doc/11.png" width="200" height="200" />](doc/11.png)
 
 ## How to build
 
